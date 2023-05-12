@@ -27,6 +27,9 @@ app.use('/stock', stockRoutes);
 const icePackRecordRoutes = require('./routes/icePackRecordRoutes');
 app.use('/icepack_record', icePackRecordRoutes);
 
+const accessRights = require('./routes/accessRights')
+app.use('/access', accessRights);
+
 app.get('/set-cookie', (req, res) => {
   res.cookie('myCookie', 'myValue', {
     sameSite: 'none',

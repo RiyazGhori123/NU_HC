@@ -28,6 +28,7 @@ import Profile from "pages/Profile";
 import AddStock from "pages/stocks/AddStock";
 import AllStocks from "pages/stocks/AllStocks";
 import Welcome from "pages/Welcome";
+import ProtectedRoute from "ProtectedRoute";
 
 function App() {
   const { isLoading, logout, getIdTokenClaims } = useAuth0();
@@ -88,50 +89,59 @@ function App() {
   return (
     <BrowserRouter>
       {/* <RefineKbarProvider> */}
-        <Refine
-          dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
-          routerProvider={routerBindings}
-          authProvider={authProvider}
-        >
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Authenticated fallback={<CatchAllNavigate to="/login" />}>
-                  <Layout>
-                    <RootLayout />
-                    <Outlet />
-                  </Layout>
-                </Authenticated>
-              }
-            >
-              <Route path="/" element={<Welcome />} />
-              <Route path="records" element={<HomeLayout />}>
-                <Route path="add_record" element={<AddRecord />} />
-                <Route path="all_records" element={<AllRecords />} />
-              </Route>
-              <Route path="stock" element={<StockLayout />}>
-                <Route path="add_stock" element={<AddStock />} />
-                <Route path="all_stocks" element={<AllStocks />} />
-              </Route>
-              <Route path="icepack_record" element={<IcepackRecord />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="*" element={<ErrorComponent />} />
+      <Refine
+        dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+        routerProvider={routerBindings}
+        authProvider={authProvider}
+      >
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Authenticated fallback={<CatchAllNavigate to="/login" />}>
+                <Layout>
+                  <RootLayout />
+                  <Outlet />
+                </Layout>
+              </Authenticated>
+            }
+          >
+            <Route path="/" element={<Welcome />} />
+            <Route path="records" element={<HomeLayout />}>
+              <Route path="add_record" element={<AddRecord />} />
+              <Route path="all_records" element={<AllRecords />} />
             </Route>
-            <Route
-              element={
-                <Authenticated fallback={<Outlet />}>
-                  <NavigateToResource />
-                </Authenticated>
-              }
-            >
-              <Route path="/login" element={<Login />} />
+            <Route path="stock" element={<StockLayout />}>
+              {/* <Route path="add_stock" element={<AddStock />} /> */}
+              <Route
+                path="add_stock"
+                element={
+                  <ProtectedRoute
+                    component={AddStock}
+                    requiredRole="Admin"
+                  />
+                }
+              ></Route>
+              <Route path="all_stocks" element={<AllStocks />} />
             </Route>
-          </Routes>
+            <Route path="icepack_record" element={<IcepackRecord />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="*" element={<ErrorComponent />} />
+          </Route>
+          <Route
+            element={
+              <Authenticated fallback={<Outlet />}>
+                <NavigateToResource />
+              </Authenticated>
+            }
+          >
+            <Route path="/login" element={<Login />} />
+          </Route>
+        </Routes>
 
-          {/* <RefineKbar /> */}
-          <UnsavedChangesNotifier />
-        </Refine>
+        {/* <RefineKbar /> */}
+        <UnsavedChangesNotifier />
+      </Refine>
       {/* </RefineKbarProvider> */}
     </BrowserRouter>
   );
